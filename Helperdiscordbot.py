@@ -14,7 +14,7 @@ role_sm = # role id server master (to use the start and restart commands)
 role_helper =  # role id helper
 print(bat_path)
 def read_builder(): #text for new builder
-    with open('C:/Users/TeamCIS/Desktop/TeamCISHelperBot/new_builder.txt', 'r', encoding='utf-8') as data:
+    with open('your_path/new_builder.txt', 'r', encoding='utf-8') as data:
         return data.read()
 
 text_builder = read_builder()
@@ -22,6 +22,11 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.typing = False
 intents.presences = False
+
+# restart time
+stop_h = 4
+stop_m = 0
+stop_s = 0
 
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 bot.change_presence(status=discord.Status.online, activity=discord.Game("by Котик Воркотик#6990"))
@@ -61,11 +66,12 @@ async def restart(ctx):
     await channel.send('stop')
     await asyncio.sleep(5 * 60)
     await os.startfile(bat_path)
+    await restart_timer(ctx) 
 
 @bot.command(name='accept', pass_context = True)
 @commands.has_role(role_helper)
 async def addrole(ctx,user : discord.Member, nick):
-    #await ctx.send(f'{user.mention}, {nick}')
+    await ctx.send(f'{user.mention}, {nick}')
     role = discord.utils.get(user.guild.roles, id=802893377833795584)
     await user.remove_roles(role)
     role = discord.utils.get( user.guild.roles, id =901933301315551262)
@@ -75,6 +81,26 @@ async def addrole(ctx,user : discord.Member, nick):
     await channel_c.send(f'lp user {nick} parent add junior')
     await channel_b.send(f'{user.mention} {text_builder}')
     await ctx.reply('Принял новичка')
-
+    
+# @bot.command(name="autorestart",pass_context = True)
+# @commands.has_role(role_sm)
+async def restart_timer(ctx):
+    channel = bot.get_channel(bot_ch)
+    start_h = time.strftime('%H')
+    start_m = time.strftime('%M')
+    start_s = time.strftime('%S')
+    wait_time_h = (stop_h - int(start_h)) * 60 * 60
+    wait_time_m = (stop_m - int(start_m)) * 60
+    wait_time_s = (stop_s - int(start_s))
+    if wait_time_h <= 0:
+        wait_time_h = wait_time_h + 23 * 60 * 60 
+    if wait_time_m <= 0:
+        wait_time_m = wait_time_m + 59 * 60
+    if wait_time_s <= 0:
+        wait_time_s = wait_time_s + 60
+    wait_time = wait_time_h + wait_time_m + wait_time_s
+    await channel.send(f"{wait_time}")
+    await asyncio.sleep(wait_time)
+    await restart(ctx)
 
 bot.run(TOKEN)
