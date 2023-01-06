@@ -10,28 +10,29 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 TOKEN = '' #BOT TOKEN
 prefix = '*' # Bot prefix
-console_ch = 1039908331340447845 #id console chat(need a plugin DiscordSRV)
-bot_ch = 1054097105611923476 # main channel for bot (If needed)
-builder_ch = 697431158845079663# 928941669049577472 builders chat (If needed)
-helper_ch = 1006195168074010754
+console_ch = #id console chat(need a plugin DiscordSRV)
+bot_ch = # main channel for bot (If needed)
+builder_ch = # 928941669049577472 builders chat (If needed)
+helper_ch =
 bat_path = 'D:/bte-1.12.2/RUN.bat' # If you want use command start and restart (for minecraft server)
-role_sm = 718940924767502356 # role id server master (to use the start and restart commands)
-role_helper = 861176113580212254 # role id helper
-head_helper = '<@&1006168101987029063>'
-sm_ch = 744943591176274092
+role_sm = # role id server master (to use the start and restart commands)
+role_helper = # role id helper
+head_helper =
+sm_ch =
 papka_bota_path = 'C:/Users/dmist/Desktop/TeamCISHelperBot/' # 'C:/Users/TeamCIS/Desktop/TeamCISHelperBot/'
 print(bat_path)
 def read_builder(): #text for new builder
     with open(f'{papka_bota_path}new_builder.txt', 'r', encoding='utf-8') as data:
         return data.read()
 
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.typing = False
 intents.presences = False
-# restart time
 
+manual_restart = 0
+
+# restart time
 stop_h = 4
 stop_m = 0
 stop_s = 0
@@ -47,12 +48,14 @@ def read_helpers(id):
             if int(ID) == id:
                 return nick
             else: pass
+    return
 
 @bot.command(name='ping')
 async def ping(ctx):
     await ctx.send('Фыромяу')
     await bot.change_presence(status=discord.Status.online,
                               activity=discord.Activity(name=f'by Котик Воркотик#6990', type=discord.ActivityType.playing))
+    return
 
 @bot.command(name='role')
 @commands.has_role(role_helper)
@@ -61,6 +64,7 @@ async def print(ctx, *, text):
     nick, role = text.split()
     await channel.send(f'lp user {nick} parent add {role}')
     await ctx.reply("Выдал")
+    return
 
 @bot.command(name='start')
 @commands.has_role(role_sm)
@@ -70,10 +74,10 @@ async def st(ctx, *arg):
     ctx.reply("Начинаю. Сервер начнёт запускаться через 2 минуты")
     await  asyncio.sleep(120)
     os.startfile(bat_path)
+    return
 
-@bot.command(name='restart')
-@commands.has_role(role_sm)
 async def restart(ctx):
+    global manual_restart
     channel = bot.get_channel(console_ch)
     await channel.send('tellraw @a {"text":"Перезагрузка через 3 минуты!","color":"red"}')
     await channel.send('save-all')
@@ -87,11 +91,22 @@ async def restart(ctx):
     await channel.send('stop')
     await asyncio.sleep(4 * 60)
     os.startfile(bat_path)
-    await restart_timer(ctx)
+    if manual_restart == 0:
+        await restart_timer(ctx)
+    return
+
+@bot.command(name='restart')
+@commands.has_role(role_sm)
+async def manual_restart(ctx):
+    global manual_restart
+    manual_restart = 1
+    await restart(ctx)
+    return
 
 @bot.command(name="autorestart",pass_context = True)
 @commands.has_role(role_sm)
 async def restart_timer(ctx):
+    global manual_restart
     channel = bot.get_channel(sm_ch)
     start_h = time.strftime('%H')
     start_m = time.strftime('%M')
@@ -108,12 +123,13 @@ async def restart_timer(ctx):
     wait_time = wait_time_h + wait_time_m + wait_time_s
     await channel.send(f"{wait_time}")
     await asyncio.sleep(wait_time)
+    manual_restart = 0
     await restart(ctx)
+    return
 
 @bot.command(name='accept', pass_context = True)
 @commands.has_role(role_helper)
 async def addrole(ctx,user : discord.Member, nick):
-
     text_builder = read_builder()
     #await ctx.send(f'{user.mention}, {nick}')
     role = discord.utils.get(user.guild.roles, id=802893377833795584)
@@ -127,6 +143,7 @@ async def addrole(ctx,user : discord.Member, nick):
     await channel_b.send(f'{user.mention} {text_builder}')
     await ctx.reply('Принял новичка')
     await channel_h.send(f'{head_helper} {user.mention} заявка на сайте!')
+    return
 
 @bot.command(name='mult')
 @commands.has_role(role_helper)
@@ -135,6 +152,7 @@ async def mult(ctx, user : discord.Member):
         text = data.read()
     await ctx.send(f'{user.mention} привет! \n\n{text}')
     await ctx.message.delete()
+    return
 
 @bot.command(name='singl')
 @commands.has_role(role_helper)
@@ -143,6 +161,7 @@ async def mult(ctx, user : discord.Member):
         text = data.read()
     await ctx.send(f'{user.mention} привет! \n\n{text}')
     await ctx.message.delete()
+    return
 
 @bot.command(name='mult18')
 @commands.has_role(role_helper)
@@ -151,6 +170,7 @@ async def mult(ctx, user : discord.Member):
         text = data.read()
     await ctx.send(f'{user.mention} привет! \n\n{text}')
     await ctx.message.delete()
+    return
 
 @bot.command(name='apply')
 @commands.has_role(role_helper)
@@ -159,6 +179,7 @@ async def mult(ctx):
         text = data.read()
     await ctx.send(f'{text}')
     await ctx.message.delete()
+    return
 
 @bot.command(name='task')
 @commands.has_role(role_helper)
@@ -195,13 +216,6 @@ async def task(ctx, user : discord.Member, nick):
                                                                            ["TRUE"]]}
                                                                       ]
                                                          }).execute()
-
+    return
 
 bot.run(TOKEN)
-
-
-
-
-
-
-
