@@ -6,23 +6,32 @@ from pprint import pprint
 import httplib2
 import apiclient
 from oauth2client.service_account import ServiceAccountCredentials
+from configparser import ConfigParser
 
+#config
+config_path = os.getcwd() + "/config.ini"
+config = ConfigParser()
+config.read(config_path)
+basic_cfg = config["BASIC"]
+role_cfg = config["ROLES"]
+channel_cfg = config["CHANNELS"]
+restart_cfg = config["RESTART"]
 
 TOKEN = '' #BOT TOKEN
-prefix = '*' # Bot prefix
-console_ch = #id console chat(need a plugin DiscordSRV)
-bot_ch = # main channel for bot (If needed)
-builder_ch = # 928941669049577472 builders chat (If needed)
-helper_ch =
-bat_path = 'D:/bte-1.12.2/RUN.bat' # If you want use command start and restart (for minecraft server)
-role_sm = # role id server master (to use the start and restart commands)
-role_helper = # role id helper
-head_helper =
-sm_ch =
-papka_bota_path = 'C:/Users/dmist/Desktop/TeamCISHelperBot/' # 'C:/Users/TeamCIS/Desktop/TeamCISHelperBot/'
+prefix = basic_cfg["prefix"] # Bot prefix
+console_ch = int(channel_cfg["console"]) #id console chat(need a plugin DiscordSRV) to send console meddages through discord
+bot_ch = int(channel_cfg["main"]) # main channel for bot (If needed)
+builder_ch = int(channel_cfg["builders"])# 928941669049577472 builders chat (If needed)
+helper_ch = int(channel_cfg["helpers"])
+bat_path = basic_cfg["bat"] # If you want use command start and restart (for minecraft server)
+role_sm = int(role_cfg["server_master"]) # role id server master (to use the start and restart commands)
+role_helper = int(role_cfg["helper"]) # role id helper
+head_helper = role_cfg["head_helper"]
+sm_ch = int(channel_cfg["server_masters"])
+papka_bota_path = os.getcwd() # 'C:/Users/TeamCIS/Desktop/TeamCISHelperBot/'
 print(bat_path)
 def read_builder(): #text for new builder
-    with open(f'{papka_bota_path}new_builder.txt', 'r', encoding='utf-8') as data:
+    with open(f"{papka_bota_path}" + '/new_builder.txt', 'r', encoding='utf-8') as data:
         return data.read()
 
 intents = discord.Intents.default()
@@ -33,15 +42,15 @@ intents.presences = False
 manual_restart = 0
 
 # restart time
-stop_h = 4
-stop_m = 0
-stop_s = 0
+frequency = int(restart_cfg["frequancy"])
+stop_h = int(restart_cfg["time"])//10000
+stop_m = int(restart_cfg["time"])%10000//100
+stop_s = int(restart_cfg["time"])%100
 
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
-
-def read_helpers(id):
-    with open(f"{papka_bota_path}Helpers.txt", 'r', encoding='utf-8') as data:
+async def read_helpers(id):
+    with open(f"{papka_bota_path}" + "/Helpers.txt", 'r', encoding='utf-8') as data:
         for line in data:
             line = line.rstrip('\n')
             ID, nick = line.split('/')
@@ -111,11 +120,11 @@ async def restart_timer(ctx):
     start_h = time.strftime('%H')
     start_m = time.strftime('%M')
     start_s = time.strftime('%S')
-    wait_time_h = (stop_h - int(start_h)) * 60 * 60
-    wait_time_m = (stop_m - int(start_m)) * 60
-    wait_time_s = (stop_s - int(start_s))
+    wait_time_h = (stop_h - start_h) * 60 * 60
+    wait_time_m = (stop_m - start_m) * 60
+    wait_time_s = (stop_s - start_s)
     if wait_time_h <= 0:
-        wait_time_h = wait_time_h + 23 * 60 * 60
+        wait_time_h = wait_time_h + ((frequency * 24) - 1) * 60 * 60
     if wait_time_m <= 0:
         wait_time_m = wait_time_m + 59 * 60
     if wait_time_s <= 0:
@@ -132,9 +141,9 @@ async def restart_timer(ctx):
 async def addrole(ctx,user : discord.Member, nick):
     text_builder = read_builder()
     #await ctx.send(f'{user.mention}, {nick}')
-    role = discord.utils.get(user.guild.roles, id=802893377833795584)
+    role = discord.utils.get(user.guild.roles, id=802893377833795584) #i'm lazy to put it in cfg
     await user.remove_roles(role)
-    role = discord.utils.get( user.guild.roles, id =901933301315551262)
+    role = discord.utils.get( user.guild.roles, id =901933301315551262) #this too
     await user.add_roles(role)
     channel_c = bot.get_channel(console_ch)
     channel_b = bot.get_channel(builder_ch)
@@ -142,13 +151,13 @@ async def addrole(ctx,user : discord.Member, nick):
     await channel_c.send(f'lp user {nick} parent add junior')
     await channel_b.send(f'{user.mention} {text_builder}')
     await ctx.reply('Принял новичка')
-    await channel_h.send(f'{head_helper} {user.mention} заявка на сайте!')
+    await channel_h.send(f'{head_helper} {user.mention} заявка на сайте!') #i mean all this shit, next time
     return
 
 @bot.command(name='mult')
 @commands.has_role(role_helper)
 async def mult(ctx, user : discord.Member):
-    with open(f"{papka_bota_path}mult.txt", 'r', encoding='utf-8') as data:
+    with open(f"{papka_bota_path}" + "/mult.txt", 'r', encoding='utf-8') as data:
         text = data.read()
     await ctx.send(f'{user.mention} привет! \n\n{text}')
     await ctx.message.delete()
@@ -157,7 +166,7 @@ async def mult(ctx, user : discord.Member):
 @bot.command(name='singl')
 @commands.has_role(role_helper)
 async def mult(ctx, user : discord.Member):
-    with open(f"{papka_bota_path}singl.txt", 'r', encoding='utf-8') as data:
+    with open(f"{papka_bota_path}" + "/singl.txt", 'r', encoding='utf-8') as data:
         text = data.read()
     await ctx.send(f'{user.mention} привет! \n\n{text}')
     await ctx.message.delete()
@@ -166,7 +175,7 @@ async def mult(ctx, user : discord.Member):
 @bot.command(name='mult18')
 @commands.has_role(role_helper)
 async def mult(ctx, user : discord.Member):
-    with open(f"{papka_bota_path}mult18.txt", 'r', encoding='utf-8') as data:
+    with open(f"{papka_bota_path}" + "/mult18.txt", 'r', encoding='utf-8') as data:
         text = data.read()
     await ctx.send(f'{user.mention} привет! \n\n{text}')
     await ctx.message.delete()
@@ -175,7 +184,7 @@ async def mult(ctx, user : discord.Member):
 @bot.command(name='apply')
 @commands.has_role(role_helper)
 async def mult(ctx):
-    with open(f"{papka_bota_path}apply.txt", 'r', encoding='utf-8') as data:
+    with open(f"{papka_bota_path}" + "/apply.txt", 'r', encoding='utf-8') as data:
         text = data.read()
     await ctx.send(f'{text}')
     await ctx.message.delete()
@@ -184,7 +193,7 @@ async def mult(ctx):
 @bot.command(name='task')
 @commands.has_role(role_helper)
 async def task(ctx, user : discord.Member, nick):
-    CRED = 'C:/Users/dmist/Desktop/TeamCISHelperBot/CRED.json'
+    CRED = 'C:/Users/dmist/Desktop/TeamCISHelperBot/CRED.json' #didn't get here for cfg
     spreadsheet_id = '1Bp0SvkDhgZ9w4pLxiN5cnKiMuK46U3-YKrZ2dnMdB-I'
     helper = read_helpers(ctx.author.id)
 
