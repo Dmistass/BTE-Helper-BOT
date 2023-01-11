@@ -16,6 +16,7 @@ basic_cfg = config["BASIC"]
 role_cfg = config["ROLES"]
 channel_cfg = config["CHANNELS"]
 restart_cfg = config["RESTART"]
+texts_cfg = config["TEXTS"]
 
 TOKEN = '' #BOT TOKEN
 prefix = basic_cfg["prefix"] # Bot prefix
@@ -42,7 +43,7 @@ intents.presences = False
 manual_restart = 0
 
 # restart time
-frequency = int(restart_cfg["frequancy"])
+frequency = int(restart_cfg["frequency"])
 stop_h = int(restart_cfg["time"])//10000
 stop_m = int(restart_cfg["time"])%10000//100
 stop_s = int(restart_cfg["time"])%100
@@ -80,25 +81,25 @@ async def print(ctx, *, text):
 async def st(ctx, *arg):
     channel = bot.get_channel(console_ch)
     await channel.send('stop')
-    ctx.reply("Начинаю. Сервер начнёт запускаться через 2 минуты")
-    await  asyncio.sleep(120)
+    ctx.reply(texts_cfg["start_msg"])
+    await  asyncio.sleep(int(texts_cfg["start_delay"]) * 60)
     os.startfile(bat_path)
     return
 
 async def restart(ctx):
     global manual_restart
     channel = bot.get_channel(console_ch)
-    await channel.send('tellraw @a {"text":"Перезагрузка через 3 минуты!","color":"red"}')
+    await channel.send(texts_cfg["full_rst_timer_msg"])
     await channel.send('save-all')
-    await ctx.reply('Процесс перезагрузки начался!')
-    await channel.send('cmi bossbarmsg all Перезапуск через [autoTimeLeft]! -cmd:"tellraw @a {"text":"Перезагрузка!","color":"red"}" -sec:-180 -c:red')
-    await asyncio.sleep(2 * 60)
-    await channel.send('tellraw @a {"text":"Перезагрузка через 1 минуту!","color":"red"}')
-    await asyncio.sleep(60)
-    await channel.send('tellraw @a {"text":"Перезагрузка!!!","color":"red"}')
+    await ctx.reply(texts_cfg["rst_reply"])
+    await channel.send(texts_cfg["cmi_bossbar"])
+    await asyncio.sleep(int(restart_cfg["full_rst_timer"]) - int(restart_cfg["small_rst_timer"]))
+    await channel.send(restart_cfg["small_rst_timer_msg"])
+    await asyncio.sleep(int(restart_cfg["small_rst_timer"]))
+    await channel.send(texts_cfg["rst_msg"])
     await asyncio.sleep(5)
     await channel.send('stop')
-    await asyncio.sleep(4 * 60)
+    await asyncio.sleep(int(restart_cfg["stop_timer"]))
     os.startfile(bat_path)
     if manual_restart == 0:
         await restart_timer(ctx)
@@ -130,7 +131,7 @@ async def restart_timer(ctx):
     if wait_time_s <= 0:
         wait_time_s = wait_time_s + 60
     wait_time = wait_time_h + wait_time_m + wait_time_s
-    await channel.send(f"{wait_time}")
+    await channel.send(f"{wait_time}") #sends time left till restart
     await asyncio.sleep(wait_time)
     manual_restart = 0
     await restart(ctx)
@@ -141,17 +142,17 @@ async def restart_timer(ctx):
 async def addrole(ctx,user : discord.Member, nick):
     text_builder = read_builder()
     #await ctx.send(f'{user.mention}, {nick}')
-    role = discord.utils.get(user.guild.roles, id=802893377833795584) #i'm lazy to put it in cfg
+    role = discord.utils.get(user.guild.roles, id = (int(role_cfg["beginner"])))
     await user.remove_roles(role)
-    role = discord.utils.get( user.guild.roles, id =901933301315551262) #this too
+    role = discord.utils.get( user.guild.roles, id = (int(role_cfg["junior"])))
     await user.add_roles(role)
-    channel_c = bot.get_channel(console_ch)
-    channel_b = bot.get_channel(builder_ch)
-    channel_h = bot.get_channel(helper_ch)
-    await channel_c.send(f'lp user {nick} parent add junior')
-    await channel_b.send(f'{user.mention} {text_builder}')
+    channel_con = bot.get_channel(console_ch)
+    channel_buil = bot.get_channel(builder_ch)
+    channel_help = bot.get_channel(helper_ch)
+    await channel_con.send(f'lp user {nick} parent add junior')
+    await channel_buil.send(f'{user.mention} {text_builder}')
     await ctx.reply('Принял новичка')
-    await channel_h.send(f'{head_helper} {user.mention} заявка на сайте!') #i mean all this shit, next time
+    await channel_help.send(f'{head_helper} {user.mention} {texts_cfg["hh_not"]}')
     return
 
 @bot.command(name='mult')
@@ -193,7 +194,7 @@ async def mult(ctx):
 @bot.command(name='task')
 @commands.has_role(role_helper)
 async def task(ctx, user : discord.Member, nick):
-    CRED = 'C:/Users/dmist/Desktop/TeamCISHelperBot/CRED.json' #didn't get here for cfg
+    CRED = 'C:/Users/dmist/Desktop/TeamCISHelperBot/CRED.json' #i don't want to touch this mess even if it's not actual mess
     spreadsheet_id = '1Bp0SvkDhgZ9w4pLxiN5cnKiMuK46U3-YKrZ2dnMdB-I'
     helper = read_helpers(ctx.author.id)
 
