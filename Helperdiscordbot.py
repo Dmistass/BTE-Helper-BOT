@@ -118,9 +118,9 @@ async def manual_restart(ctx):
 async def restart_timer(ctx):
     global manual_restart
     channel = bot.get_channel(sm_ch)
-    start_h = time.strftime('%H')
-    start_m = time.strftime('%M')
-    start_s = time.strftime('%S')
+    start_h = int(time.strftime('%H'))
+    start_m = int(time.strftime('%M'))
+    start_s = int(time.strftime('%S'))
     wait_time_h = (stop_h - start_h) * 60 * 60
     wait_time_m = (stop_m - start_m) * 60
     wait_time_s = (stop_s - start_s)
