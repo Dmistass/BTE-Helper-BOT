@@ -42,12 +42,6 @@ intents.presences = False
 
 manual_restart = 0
 
-# restart time
-frequency = int(restart_cfg["frequency"])
-stop_h = int(restart_cfg["time"])//10000
-stop_m = int(restart_cfg["time"])%10000//100
-stop_s = int(restart_cfg["time"])%100
-
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 async def read_helpers(id):
@@ -94,7 +88,7 @@ async def restart(ctx):
     await ctx.reply(texts_cfg["rst_reply"])
     await channel.send(texts_cfg["cmi_bossbar"])
     await asyncio.sleep(int(restart_cfg["full_rst_timer"]) - int(restart_cfg["small_rst_timer"]))
-    await channel.send(restart_cfg["small_rst_timer_msg"])
+    await channel.send(texts_cfg["small_rst_timer_msg"])
     await asyncio.sleep(int(restart_cfg["small_rst_timer"]))
     await channel.send(texts_cfg["rst_msg"])
     await asyncio.sleep(5)
@@ -118,6 +112,10 @@ async def manual_restart(ctx):
 async def restart_timer(ctx):
     global manual_restart
     channel = bot.get_channel(sm_ch)
+    frequency = int(restart_cfg["frequency"])   # restart time
+    stop_h = int(restart_cfg["time"])//10000
+    stop_m = int(restart_cfg["time"])%10000//100
+    stop_s = int(restart_cfg["time"])%100
     start_h = int(time.strftime('%H'))
     start_m = int(time.strftime('%M'))
     start_s = int(time.strftime('%S'))
@@ -131,7 +129,7 @@ async def restart_timer(ctx):
     if wait_time_s <= 0:
         wait_time_s = wait_time_s + 60
     wait_time = wait_time_h + wait_time_m + wait_time_s
-    await channel.send(f"{wait_time}") #sends time left till restart
+    await channel.send(f"{wait_time}")  #sends time left till restart
     await asyncio.sleep(wait_time)
     manual_restart = 0
     await restart(ctx)
