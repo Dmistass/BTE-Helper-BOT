@@ -1,0 +1,37 @@
+[BASIC]
+
+prefix = *  #prefix for bot commands
+bat =   #server bat file path
+
+[ROLES]
+server_master =   #server master role id
+head_helper =   #head_helper id
+helper =   #helper role id
+beginner =   #beginner role id
+junior =   #junior role id
+
+[CHANNELS]
+main =   #main channel for bot commands
+console =   #channel to send console commands through discord
+builders =   #builders channel, notifies everybody about new builder
+helpers =   #helper's channel 
+server_masters =   #server master's channel
+
+[RESTART]
+time = 040000  #time for restart (24 hour format: hhmmss)
+frequency = 1  #restart frequancy in full days (1 or more)
+full_rst_timer = 180  #time till restart IN SECONDS
+small_rst_timer = 60  #notification before restart timer IN SECONDS (1 minute recommended) 
+stop_timer = 240  #delay after stop command, before starting new server IN SECONDS
+
+[TEXTS]
+start_delay = 120 #delay after *start command
+start_reply = your_text  #reply message after *start command
+
+full_rst_timer_msg = tellraw @a {"text":"your_text","color":"red"}  #restart timer
+small_rst_timer_msg = tellraw @a {"text":"your tex","color":"red"}  #notification before restart
+rst_msg = tellraw @a {"text":"your_text","color":"red"}  #notification at restart
+rst_reply = your_text  #discord reply
+cmi_bossbar = cmi bossbarmsg all your_text [autoTimeLeft]! -cmd:"tellraw @a {"text":"your_text","color":"red"}" -sec:-180 -c:red  #fancy cmi bossbar
+
+hh_not = your_text  #head healper notification

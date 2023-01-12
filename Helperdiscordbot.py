@@ -10,8 +10,8 @@ from configparser import ConfigParser
 
 #config
 config_path = os.getcwd() + "/config.ini"
-config = ConfigParser()
-config.read(config_path)
+config = ConfigParser(inline_comment_prefixes = ('#', ';'))
+config.read(config_path, encoding = "utf-8")
 basic_cfg = config["BASIC"]
 role_cfg = config["ROLES"]
 channel_cfg = config["CHANNELS"]
