@@ -1,5 +1,4 @@
 [BASIC]
-
 prefix = *  #prefix for bot commands
 bat =   #server bat file path
 
@@ -29,7 +28,7 @@ start_delay = 120 #delay after *start command
 start_reply = your_text  #reply message after *start command
 
 full_rst_timer_msg = tellraw @a {"text":"your_text","color":"red"}  #restart timer
-small_rst_timer_msg = tellraw @a {"text":"your tex","color":"red"}  #notification before restart
+small_rst_timer_msg = tellraw @a {"text":"your text","color":"red"}  #notification before restart
 rst_msg = tellraw @a {"text":"your_text","color":"red"}  #notification at restart
 rst_reply = your_text  #discord reply
 cmi_bossbar = cmi bossbarmsg all your_text [autoTimeLeft]! -cmd:"tellraw @a {"text":"your_text","color":"red"}" -sec:-180 -c:red  #fancy cmi bossbar

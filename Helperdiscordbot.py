@@ -9,7 +9,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from configparser import ConfigParser
 
 #config
-config_path = os.getcwd() + "/config.ini"
+config_path = os.getcwd() + "/config.txt"
 config = ConfigParser(inline_comment_prefixes = ('#', ';'))
 config.read(config_path, encoding = "utf-8")
 basic_cfg = config["BASIC"]
@@ -40,7 +40,7 @@ intents.message_content = True
 intents.typing = False
 intents.presences = False
 
-manual_restart = 0
+is_manual_restart = 0
 
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
@@ -81,7 +81,7 @@ async def st(ctx, *arg):
     return
 
 async def restart(ctx):
-    global manual_restart
+    global is_manual_restart
     channel = bot.get_channel(console_ch)
     await channel.send(texts_cfg["full_rst_timer_msg"])
     await channel.send('save-all')
@@ -95,22 +95,22 @@ async def restart(ctx):
     await channel.send('stop')
     await asyncio.sleep(int(restart_cfg["stop_timer"]))
     os.startfile(bat_path)
-    if manual_restart == 0:
+    if is_manual_restart == 0:
         await restart_timer(ctx)
     return
 
 @bot.command(name='restart')
 @commands.has_role(role_sm)
 async def manual_restart(ctx):
-    global manual_restart
-    manual_restart = 1
+    global is_manual_restart
+    is_manual_restart = 1
     await restart(ctx)
     return
 
 @bot.command(name="autorestart",pass_context = True)
 @commands.has_role(role_sm)
 async def restart_timer(ctx):
-    global manual_restart
+    global is_manual_restart
     channel = bot.get_channel(sm_ch)
     frequency = int(restart_cfg["frequency"])   # restart time
     stop_h = int(restart_cfg["time"])//10000
@@ -131,7 +131,7 @@ async def restart_timer(ctx):
     wait_time = wait_time_h + wait_time_m + wait_time_s
     await channel.send(f"{wait_time}")  #sends time left till restart
     await asyncio.sleep(wait_time)
-    manual_restart = 0
+    is_manual_restart = 0
     await restart(ctx)
     return
 
