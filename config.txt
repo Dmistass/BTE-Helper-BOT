@@ -1,5 +1,4 @@
 [BASIC]
-
 prefix = *  #prefix for bot commands
 bat =   #server bat file path
 
