@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import os, time, datetime, asyncio, json
+import os, time, asyncio, re
 from discord.utils import get
 from pprint import pprint
 import httplib2
@@ -17,6 +17,7 @@ role_cfg = config["ROLES"]
 channel_cfg = config["CHANNELS"]
 restart_cfg = config["RESTART"]
 texts_cfg = config["TEXTS"]
+reacts_cfg = config["REACTIONS"]
 
 TOKEN = '' #BOT TOKEN
 prefix = basic_cfg["prefix"] # Bot prefix
@@ -24,6 +25,7 @@ console_ch = int(channel_cfg["console"]) #id console chat(need a plugin DiscordS
 bot_ch = int(channel_cfg["main"]) # main channel for bot (If needed)
 builder_ch = int(channel_cfg["builders"])# 928941669049577472 builders chat (If needed)
 helper_ch = int(channel_cfg["helpers"])
+show_ch = int(channel_cfg["showcase"])
 bat_path = basic_cfg["bat"] # If you want use command start and restart (for minecraft server)
 role_sm = int(role_cfg["server_master"]) # role id server master (to use the start and restart commands)
 role_helper = int(role_cfg["helper"]) # role id helper
@@ -52,6 +54,26 @@ async def read_helpers(id):
             if int(ID) == id:
                 return nick
             else: pass
+    return
+
+@bot.event #reactions in showcase
+async def on_message(message):
+    await bot.process_commands(message)
+    msg_text =  message.content
+    if message.channel.id != show_ch:
+        return
+    if message.author.bot:
+        return
+    msg_text = msg_text.replace(".", "")
+    words = re.split(r": |, |; |\s+|:|,|;", msg_text)
+    for word in (words):
+        i = 0
+        for i, line in enumerate(reacts_cfg):
+            flag_trig = str(reacts_cfg[line])
+            flag_trig = flag_trig.split(", ")
+            if word.casefold() == flag_trig[0].casefold():            
+                await message.add_reaction(flag_trig[1])                       
+            i += 1
     return
 
 @bot.command(name='ping')

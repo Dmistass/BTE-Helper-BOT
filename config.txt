@@ -15,6 +15,7 @@ console =   #channel to send console commands through discord
 builders =   #builders channel, notifies everybody about new builder
 helpers =   #helper's channel 
 server_masters =   #server master's channel
+showcase = #showcase channel
 
 [RESTART]
 time = 040000  #time for restart (24 hour format: hhmmss)
@@ -34,3 +35,7 @@ rst_reply = your_text  #discord reply
 cmi_bossbar = cmi bossbarmsg all your_text [autoTimeLeft]! -cmd:"tellraw @a {"text":"your_text","color":"red"}" -sec:-180 -c:red  #fancy cmi bossbar
 
 hh_not = your_text  #head healper notification
+
+[REACTIONS]
+react1 = word, emoji #adds reaction if message contents trigger-word
+react2 = word, emoji
