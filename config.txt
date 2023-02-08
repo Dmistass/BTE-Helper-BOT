@@ -1,0 +1,55 @@
+[BASIC]
+;prefix for bot commands
+;server bat file path
+prefix = *
+bat = D:/bte-1.12.2/RUN.bat
+
+[ROLES]
+;server master role id
+;head_helper id
+;helper role id
+;beginner role id
+;junior role id
+server_master = 718940924767502356
+head_helper = <@&1006168101987029063>
+helper = 861176113580212254
+beginner = 802893377833795584
+junior = 901933301315551262
+
+[CHANNELS]
+;main channel for bot commands
+;channel to send console commands through discord
+;builders channel, notifies everybody about new builder
+;helper's channel 
+;server master's channel
+main = 1054097105611923476
+console = 1039908331340447845
+builders = 697431158845079663
+helpers = 1006195168074010754
+server_masters = 744943591176274092
+
+[RESTART]
+;time for restart (24 hour format: hhmmss)
+;restart frequancy in full days (1 or more)
+;time till restart IN SECONDS
+;notification before restart timer IN SECONDS (1 minute recommended) 
+;delay after stop command, before starting new server IN SECONDS
+time = 040000
+frequency = 1
+full_rst_timer = 180
+small_rst_timer = 60
+stop_timer = 240
+
+[TEXTS]
+;start text delay
+start_delay = 120
+start_reply = Начинаю. Сервер начнёт запускаться через 2 минуты
+;restart texts (bossbar if needed)
+full_rst_timer_msg = tellraw @a {"text":"Перезагрузка через 3 минуты!","color":"red"}
+small_rst_timer_msg = tellraw @a {"text":"Перезагрузка через 1 минуту!","color":"red"}
+rst_msg = tellraw @a {"text":"Перезагрузка!!!","color":"red"}
+rst_reply = Процесс перезагрузки начался!
+cmi_bossbar = cmi bossbarmsg all Перезапуск через [autoTimeLeft]! -cmd:"tellraw @a {"text":"Перезагрузка!","color":"red"}" -sec:-180 -c:red
+;head helper notifications
+hh_not = заявка на сайте!
+ping = Фыромяу
